@@ -78,7 +78,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 .panel ol{list-style:none;margin:0;padding:0;counter-reset:m}
 .panel li{border-bottom:1px solid var(--line);opacity:0;transform:translateY(18px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
 .panel.open li{opacity:1;transform:none}
-.panel.open li:nth-child(2){transition-delay:.06s}.panel.open li:nth-child(3){transition-delay:.12s}.panel.open li:nth-child(4){transition-delay:.18s}.panel.open li:nth-child(5){transition-delay:.24s}.panel.open li:nth-child(6){transition-delay:.3s}
+.panel.open li:nth-child(2){transition-delay:.06s}.panel.open li:nth-child(3){transition-delay:.12s}.panel.open li:nth-child(4){transition-delay:.18s}.panel.open li:nth-child(5){transition-delay:.24s}.panel.open li:nth-child(6){transition-delay:.3s}.panel.open li:nth-child(7){transition-delay:.36s}
 .panel a.big-link{display:flex;align-items:baseline;gap:16px;padding:min(16px,1.6vh) 0;text-decoration:none;font:900 clamp(30px,min(11vw,6.6vh),64px)/1 var(--display);text-transform:uppercase}
 .panel a.big-link .mono{color:var(--accent)}
 .panel .row{display:flex;flex-direction:column;gap:12px;margin-top:32px}
@@ -291,6 +291,33 @@ h2.big{font:900 clamp(44px,6vw,92px)/.92 var(--display);text-transform:uppercase
 @media (max-width:560px){.board .r{grid-template-columns:1fr 1fr}.board .r .d2{grid-column:2}.board .r.hd{display:none}.board .day{grid-column:1/-1}}
 
 
+
+/* gallery */
+.gallery .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
+.gal-grid{columns:3 280px;column-gap:18px;margin-top:44px}
+.gal-item{break-inside:avoid;margin:0 0 18px;display:block;width:100%;padding:0;border:0;background:var(--panel);border-radius:18px;overflow:hidden;cursor:zoom-in;position:relative;color:inherit;text-align:left}
+.gal-item img{width:100%;height:auto;display:block;transition:transform .8s var(--ease-out),opacity .6s var(--ease-out)}
+.gal-item:hover img{transform:scale(1.035)}
+.gal-item .cap{position:absolute;left:12px;bottom:12px;right:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}
+.gal-item .cap span{padding:6px 10px;border-radius:8px;background:rgba(8,12,13,.62);color:var(--text-primary);font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.gal-item .play{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 10px 30px -6px rgba(0,0,0,.6);transition:transform .4s var(--ease-out)}
+.gal-item .play svg{width:26px;height:26px;margin-left:4px;color:#0c1113}
+.gal-item:hover .play{transform:scale(1.08)}
+.gal-count{color:var(--text-secondary);font-size:15px}
+.lb{position:fixed;inset:0;z-index:80;background:rgba(6,9,10,.96);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s var(--ease-out),visibility 0s linear .35s;touch-action:pan-y}
+.lb.open{opacity:1;visibility:visible;transition:opacity .35s var(--ease-out),visibility 0s}
+.lb .stagebox{max-width:min(1400px,92vw);max-height:84vh;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lb img,.lb video{max-width:100%;max-height:78vh;border-radius:14px;display:block;background:#000}
+.lb .cap{color:var(--text-secondary);font-size:15px;text-align:center}
+.lb button{position:absolute;width:52px;height:52px;border-radius:50%;border:1px solid var(--line-strong);background:rgba(12,17,19,.7);color:var(--text-primary);cursor:pointer;display:grid;place-items:center;transition:border-color .3s,background .3s}
+.lb button:hover{border-color:var(--accent)}
+.lb button svg{width:22px;height:22px}
+.lb .x{top:18px;right:18px}
+.lb .prev{left:18px;top:50%;margin-top:-26px}
+.lb .next{right:18px;top:50%;margin-top:-26px}
+.lb .num{position:absolute;top:30px;left:24px;color:var(--text-secondary)}
+@media (max-width:720px){.lb .prev,.lb .next{top:auto;bottom:22px;margin:0}.lb .prev{left:calc(50% - 64px)}.lb .next{right:calc(50% - 64px)}.lb .stagebox{max-width:96vw}}
+
 /* prices */
 .prices .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
 .price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,28px);margin-top:48px;align-items:stretch}
@@ -406,6 +433,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
   <ul>
     <li><a href="#hall">The hall</a></li>
     <li><a href="#academy">Academy</a></li>
+    <li><a href="#gallery">Gallery</a></li>
     <li><a href="#timings">Timings</a></li>
     <li><a href="#prices">Prices</a></li>
     <li><a href="#faq">Questions</a></li>
@@ -417,10 +445,11 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
   <ol>
     <li><a class="big-link" href="#hall"><span class="mono">01</span>The hall</a></li>
     <li><a class="big-link" href="#academy"><span class="mono">02</span>Academy</a></li>
-    <li><a class="big-link" href="#timings"><span class="mono">03</span>Timings</a></li>
-    <li><a class="big-link" href="#prices"><span class="mono">04</span>Prices</a></li>
-    <li><a class="big-link" href="#faq"><span class="mono">05</span>Questions</a></li>
-    <li><a class="big-link" href="#book"><span class="mono">06</span>Book</a></li>
+    <li><a class="big-link" href="#gallery"><span class="mono">03</span>Gallery</a></li>
+    <li><a class="big-link" href="#timings"><span class="mono">04</span>Timings</a></li>
+    <li><a class="big-link" href="#prices"><span class="mono">05</span>Prices</a></li>
+    <li><a class="big-link" href="#faq"><span class="mono">06</span>Questions</a></li>
+    <li><a class="big-link" href="#book"><span class="mono">07</span>Book</a></li>
   </ol>
   <div class="row">
     <a class="btn btn-primary" href="https://wa.me/918141850055?text=Hi%20Aark%20Arena%2C%20I%27d%20like%20to%20book%20a%20slot." target="_blank" rel="noopener">Book on WhatsApp</a>
@@ -482,7 +511,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
 <section class="sec hall" id="hall">
   <div class="wrap rv">
     <figure class="part">
-      <img src="assets/hall.jpg" alt="Inside Aark Arena: striped green turf, white net lanes, floodlights under a steel roof" loading="lazy" width="1062" height="1441">
+      <img src="assets/gallery/hall.jpg" alt="Inside Aark Arena: striped green turf, white net lanes, floodlights under a steel roof" loading="lazy" width="1062" height="1441">
       <figcaption class="mono">The real hall, Aark Arena</figcaption>
     </figure>
     <div>
@@ -507,7 +536,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
       <p class="lede part">A great cover drive only gets you so far. Our coaches look at the whole player, and every session works on a different side of your game, so you improve all the way round.</p>
     </div>
     <div class="acad-grid rv">
-      <figure class="acad-photo part"><img src="assets/machine.jpg" alt="A young batter facing the bowling machine in an Aark Arena net while a coach sets the pace" loading="lazy" width="822" height="1461"></figure>
+      <figure class="acad-photo part"><img src="assets/gallery/machine.jpg" alt="A young batter facing the bowling machine in an Aark Arena net while a coach sets the pace" loading="lazy" width="822" height="1461"></figure>
       <div class="angles part">
         <article class="angle"><span class="deg">90°</span><h3>Batting</h3><p>Stance, footwork and shot choice, checked ball by ball.</p><svg class="arc" viewBox="0 0 90 90" aria-hidden="true"><path d="M45 5a40 40 0 0 1 40 40" fill="none" stroke="#9be23a" stroke-width="2"/></svg></article>
         <article class="angle"><span class="deg">180°</span><h3>Bowling</h3><p>A clean action, a steady run-up, and a line you can repeat.</p><svg class="arc" viewBox="0 0 90 90" aria-hidden="true"><path d="M45 5a40 40 0 0 1 0 80" fill="none" stroke="#9be23a" stroke-width="2"/></svg></article>
@@ -551,6 +580,23 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
     </div>
   </div>
 </section>
+
+<section class="sec gallery" id="gallery" aria-labelledby="gal-h">
+  <div class="wrap">
+    <div class="head rv">
+      <div><span class="mono kicker part">Gallery</span><h2 class="big part" id="gal-h">Inside Aark Arena.</h2></div>
+      <p class="gal-count part" id="galCount"></p>
+    </div>
+    <div class="gal-grid rv" id="galGrid"></div>
+  </div>
+</section>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Gallery viewer" aria-hidden="true">
+  <span class="mono num" id="lbNum"></span>
+  <div class="stagebox" id="lbBox"></div>
+  <button class="x" id="lbX" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="prev" id="lbPrev" type="button" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="next" id="lbNext" type="button" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
 
 <div class="turf rv" aria-hidden="true"></div>
 
@@ -901,6 +947,67 @@ menuBtn.addEventListener('click', () => setMenu(!panel.classList.contains('open'
 $$('a', panel).forEach(a => a.addEventListener('click', () => setMenu(false)));
 addEventListener('keydown', e => { if (e.key === 'Escape' && panel.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
 matchMedia('(min-width: 901px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
+
+/* ---------- gallery ----------
+   To add media: drop the file in assets/gallery/ and add one line below.
+   Photos: { type: 'image', src, w, h, alt, label }
+   Videos: { type: 'video', src, poster, w, h, alt, label }  (plays only when tapped) */
+const GALLERY = [
+  { type: 'image', src: 'assets/gallery/hall.jpg', w: 1062, h: 1441, alt: 'The Aark Arena hall: striped turf, white net lanes and floodlights under a steel roof', label: 'The hall' },
+  { type: 'image', src: 'assets/gallery/machine.jpg', w: 822, h: 1461, alt: 'A young batter facing the bowling machine in an Aark Arena net', label: 'Bowling machine' },
+  { type: 'image', src: 'assets/gallery/entrance.jpg', w: 901, h: 279, alt: 'The Aark Arena and Three60 Cricket Academy entrance sign with the contact number', label: 'The entrance' }
+];
+(function gallery() {
+  const grid = $('#galGrid'), lb = $('#lb'), box = $('#lbBox'), num = $('#lbNum');
+  const PLAY = '<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg></span>';
+  GALLERY.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'gal-item part';
+    b.setAttribute('aria-label', (m.type === 'video' ? 'Play video: ' : 'View photo: ') + m.alt);
+    b.innerHTML = `<img src="${m.type === 'video' ? m.poster : m.src}" alt="" loading="lazy" width="${m.w}" height="${m.h}">` +
+      (m.type === 'video' ? PLAY : '') + `<span class="cap"><span>${m.label}</span></span>`;
+    b.addEventListener('click', () => open(i));
+    grid.appendChild(b);
+  });
+  const nPhotos = GALLERY.filter(m => m.type === 'image').length, nVids = GALLERY.length - nPhotos;
+  $('#galCount').textContent = [nPhotos && nPhotos + (nPhotos > 1 ? ' photos' : ' photo'), nVids && nVids + (nVids > 1 ? ' videos' : ' video')].filter(Boolean).join(' and ') + ' from the ground';
+  let cur = -1, lastFocus = null;
+  function show(i) {
+    cur = (i + GALLERY.length) % GALLERY.length;
+    const m = GALLERY[cur];
+    box.innerHTML = m.type === 'video'
+      ? `<video src="${m.src}" poster="${m.poster}" controls playsinline preload="metadata" aria-label="${m.alt}"></video>`
+      : `<img src="${m.src}" alt="${m.alt}">`;
+    const cap = document.createElement('p'); cap.className = 'cap'; cap.textContent = m.label; box.appendChild(cap);
+    num.textContent = String(cur + 1).padStart(2, '0') + ' / ' + String(GALLERY.length).padStart(2, '0');
+    if (m.type === 'video') { const v = $('video', box); const pr = v.play(); if (pr) pr.catch(() => {}); }
+  }
+  function open(i) {
+    lastFocus = document.activeElement; show(i);
+    lb.classList.add('open'); lb.setAttribute('aria-hidden', 'false'); document.body.classList.add('menu-open');
+    $('#lbX').focus();
+  }
+  function close() {
+    lb.classList.remove('open'); lb.setAttribute('aria-hidden', 'true'); document.body.classList.remove('menu-open');
+    setTimeout(() => { if (!lb.classList.contains('open')) box.innerHTML = ''; }, 350);   // stops any playing video
+    if (lastFocus) lastFocus.focus();
+  }
+  $('#lbX').addEventListener('click', close);
+  $('#lbPrev').addEventListener('click', () => show(cur - 1));
+  $('#lbNext').addEventListener('click', () => show(cur + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft') show(cur - 1); else if (e.key === 'ArrowRight') show(cur + 1);
+  });
+  let sx = null;
+  lb.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) > 50 && !(e.target.tagName === 'VIDEO')) show(cur + (dx < 0 ? 1 : -1));
+  });
+  if (GALLERY.length < 2) { $('#lbPrev').hidden = true; $('#lbNext').hidden = true; }
+})();
 
 /* ---------- entrances + living elements scoped on screen ---------- */
 const io = new IntersectionObserver(es => es.forEach(e => {
