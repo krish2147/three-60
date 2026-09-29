@@ -45,7 +45,7 @@ a{color:inherit}
 
 /* ---------- fixed environment layer ---------- */
 .env{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:var(--canvas)}
-.env::before,.env::after{content:"";position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(40px);opacity:.5}
+.env::before,.env::after{content:"";position:absolute;width:70vmax;height:70vmax;border-radius:50%;opacity:.5;will-change:transform}
 .env::before{left:-20vmax;top:-35vmax;background:radial-gradient(circle,rgba(200,225,235,.10),rgba(200,225,235,0) 60%);animation:drift 74s linear infinite;animation-delay:-20s}
 .env::after{right:-25vmax;bottom:-40vmax;background:radial-gradient(circle,rgba(155,226,58,.08),rgba(155,226,58,0) 62%);animation:drift 90s linear infinite reverse;animation-delay:-37s}
 @keyframes drift{0%{transform:translate(0,0)}25%{transform:translate(8vmax,5vmax)}50%{transform:translate(3vmax,11vmax)}75%{transform:translate(-5vmax,4vmax)}100%{transform:translate(0,0)}}
@@ -55,7 +55,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 
 /* ---------- nav ---------- */
 .nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:24px;padding:14px var(--gutter);transition:background .5s var(--ease-out),backdrop-filter .5s}
-.nav.solid{background:rgba(12,17,19,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav.solid{background:rgba(12,17,19,.94);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .brand img{width:40px;height:40px;border-radius:10px;object-fit:cover}
 .brand b{font:900 22px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
@@ -99,9 +99,9 @@ body.menu-open{overflow:hidden}
 .hero{position:relative;height:500vh}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#0a0f10}
 .poster{position:absolute;inset:0;background:#0a0f10 center/cover no-repeat}
-.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s var(--ease-out);will-change:transform;transform:translateZ(0)}
-.stage.video-ready video{opacity:1}
-.stage.video-failed video{display:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .8s var(--ease-out);transform:translateZ(0)}
+.stage.video-ready canvas{opacity:1}
+.stage.video-failed canvas{display:none}
 .scrim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 120% 90% at 50% 45%,rgba(8,12,13,0) 35%,rgba(8,12,13,.62) 100%),linear-gradient(180deg,rgba(8,12,13,.55) 0%,rgba(8,12,13,0) 18%)}
 .band{position:absolute;opacity:0;text-shadow:var(--tshadow);pointer-events:none;will-change:opacity}
 .band.active{pointer-events:auto}
@@ -163,7 +163,7 @@ body.menu-open{overflow:hidden}
   .hero{height:auto}
   .stage{position:relative;height:100vh;height:100svh;min-height:560px}
   .poster{background-image:url('assets/hero-ending-m.jpg')}
-  .stage video,.band,.loader,.cue{display:none}
+  .stage canvas,.band,.loader,.cue{display:none}
   .static-copy{display:flex;flex-direction:column;justify-content:flex-end;position:absolute;inset:0;padding:0 var(--gutter) 13vh;text-shadow:var(--tshadow);background:linear-gradient(180deg,rgba(8,12,13,.55) 0%,rgba(8,12,13,.1) 30%,rgba(8,12,13,.35) 55%,rgba(8,12,13,.92) 100%)}
   .static-copy h1{font:900 clamp(48px,13vw,96px)/.9 var(--display);text-transform:uppercase;margin:12px 0 0}
   .static-copy p{color:#dfe6e0;max-width:36ch;margin:16px 0 26px}
@@ -403,7 +403,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
 <section class="hero" id="top" aria-label="Aark Arena at night">
   <div class="stage" id="stage">
     <div class="poster" id="poster"></div>
-    <video id="hero" preload="none" muted playsinline aria-hidden="true" tabindex="-1"></video>
+    <canvas id="heroCanvas" aria-hidden="true"></canvas>
     <div class="scrim"></div>
 
     <div class="band b1 fx-blur" data-a="0" data-b="0.24" data-ramp="0.06">
@@ -653,7 +653,7 @@ $$('.split-c').forEach((el, i) => split(el, 'c', 7 + i, parseFloat(el.closest('.
 $$('.split-w').forEach((el, i) => split(el, 'w', 3 + i, 0));
 
 /* ---------- hero scrub ---------- */
-const hero = $('.hero'), stage = $('#stage'), video = $('#hero'), posterLayer = $('#poster');
+const hero = $('.hero'), stage = $('#stage'), posterLayer = $('#poster');
 const ring = $('#ring'), loader = $('#loader'), cue = $('#cue');
 const bands = $$('.band').map(el => ({ el, a: +el.dataset.a, b: +el.dataset.b, ramp: el.dataset.ramp ? +el.dataset.ramp : null, op: -1, k: -1, act: null }));
 const firstBand = bands[0], lastBand = bands[bands.length - 1];
@@ -682,27 +682,44 @@ function updateCaptions(p) {
   }
 }
 
-let seekBusy = false, pendingTime = null;
-function requestSeek(t) {
-  if (!video.duration || !stage.classList.contains('video-ready')) return;
-  t = clamp(t, 0, video.duration - 0.04);
-  if (seekBusy) { pendingTime = t; return; }
-  if (Math.abs(video.currentTime - t) < 0.01) return;
-  seekBusy = true; video.currentTime = t;
+/* image-sequence scrub: frames are drawn to a canvas, so every scroll step
+   shows its frame instantly (no video seeking, which stutters on phones) */
+const FRAMES = 121;
+const canvas = $('#heroCanvas'), ctx2d = canvas.getContext('2d', { alpha: false });
+const frames = new Array(FRAMES);   // HTMLImageElement once decoded
+let PORTRAIT = false, drawnIdx = -1, drawnImg = null, loadedCount = 0;
+
+function sizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, PORTRAIT ? 2 : 1.5);
+  const w = Math.round(stage.clientWidth * dpr), h = Math.round(stage.clientHeight * dpr);
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; drawnIdx = -1; drawnImg = null; }
 }
-video.addEventListener('seeked', () => {
-  seekBusy = false;
-  if (pendingTime !== null) { const t = pendingTime; pendingTime = null; requestSeek(t); }
-});
-video.addEventListener('error', () => { seekBusy = false; pendingTime = null; failVideo(); });
+function nearestLoaded(i) {
+  for (let d = 0; d < FRAMES; d++) {
+    if (i - d >= 0 && frames[i - d]) return i - d;
+    if (i + d < FRAMES && frames[i + d]) return i + d;
+  }
+  return -1;
+}
+function drawFrame(p) {
+  const want = Math.round(clamp(p, 0, 1) * (FRAMES - 1));
+  const idx = nearestLoaded(want);
+  if (idx < 0) return;
+  const img = frames[idx];
+  if (idx === drawnIdx && img === drawnImg) return;   // only paint on change
+  drawnIdx = idx; drawnImg = img;
+  const cw = canvas.width, ch = canvas.height, iw = img.naturalWidth, ih = img.naturalHeight;
+  const s = Math.max(cw / iw, ch / ih), dw = iw * s, dh = ih * s;
+  ctx2d.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+}
 
 let target = 0, shown = 0, rafId = null, lastTick = 0, heroOnScreen = true;
 function tick(now) {
   const dt = Math.min(100, now - (lastTick || now)); lastTick = now;
-  shown += (target - shown) * (1 - Math.pow(1 - 0.16, dt / 16.667));
+  shown += (target - shown) * (1 - Math.pow(1 - 0.2, dt / 16.667));
   if (Math.abs(target - shown) < 0.0005) { shown = target; rafId = null; lastTick = 0; }
   else rafId = requestAnimationFrame(tick);
-  requestSeek(shown * (video.duration || 0));
+  drawFrame(shown);
   updateCaptions(shown);
 }
 function onScroll() {
@@ -710,6 +727,7 @@ function onScroll() {
   if (rafId === null && heroOnScreen && scrubOn) rafId = requestAnimationFrame(tick);
 }
 new IntersectionObserver(es => { heroOnScreen = es[0].isIntersecting; if (heroOnScreen) onScroll(); }).observe(hero);
+addEventListener('resize', () => { if (scrubOn) { sizeCanvas(); drawFrame(shown); } }, { passive: true });
 
 function makeCue() { loader.classList.add('done'); cue.classList.add('show'); }
 function failVideo() { stage.classList.add('video-failed'); makeCue(); }
@@ -721,8 +739,9 @@ function initHeroOnce() {
   PORTRAIT = matchMedia('(orientation: portrait)').matches;
   const POSTER = PORTRAIT ? 'assets/hero-poster-m.jpg' : 'assets/hero-poster.jpg';
   posterLayer.style.backgroundImage = `url('${POSTER}')`;
+  sizeCanvas();
   let started = false;
-  const start = () => { if (started) return; started = true; loadHeroBlob().catch(failVideo); };
+  const start = () => { if (started) return; started = true; loadFrames(); };
   const img = new Image(); img.onload = start; img.onerror = start; img.src = POSTER;
   setTimeout(start, 4000);
   // band one assembles on load, then hands over to scroll
@@ -733,35 +752,35 @@ function initHeroOnce() {
     if (loadK < 1) requestAnimationFrame(ramp);
   })(t0);
 }
-let PORTRAIT = false;
-async function loadHeroBlob() {
-  const VIDEO_URL = PORTRAIT ? 'assets/hero-scrub-m.mp4' : 'assets/hero-scrub.mp4';
-  const VIDEO_BYTES = PORTRAIT ? 1706416 : 5627577;
-  const ctrl = new AbortController();
-  let watchdog = setTimeout(() => ctrl.abort(), 20000);
-  const res = await fetch(VIDEO_URL, { priority: 'low', signal: ctrl.signal });
-  if (!res.ok || !res.body) throw new Error('video');
-  const total = Number(res.headers.get('Content-Length')) || VIDEO_BYTES;
-  const reader = res.body.getReader(); const chunks = []; let got = 0, lastRing = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    clearTimeout(watchdog); watchdog = setTimeout(() => ctrl.abort(), 20000);
-    chunks.push(value); got += value.length;
-    const frac = Math.min(1, got / total), now = performance.now();
-    if (now - lastRing > 100 || frac === 1) { lastRing = now; ring.style.setProperty('--ld', Math.round(126 * (1 - frac))); }
+function loadFrames() {
+  const dir = PORTRAIT ? 'assets/frames/m/' : 'assets/frames/d/';
+  // coarse to fine: every 16th frame first, then fill the gaps, so scrubbing works early
+  const order = [], seen = new Set();
+  for (const step of [16, 8, 4, 2, 1]) for (let i = 0; i < FRAMES; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+  if (!seen.has(FRAMES - 1)) order.splice(1, 0, FRAMES - 1);
+  let next = 0, failed = 0, lastRing = 0, ready = false;
+  const CONC = 6;
+  function one() {
+    if (next >= order.length) return;
+    const i = order[next++];
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = dir + String(i).padStart(3, '0') + '.webp';
+    img.decode().then(() => {
+      frames[i] = img; loadedCount++;
+      if (!ready && frames[0]) {
+        ready = true; stage.classList.add('video-ready');
+        drawnIdx = -1; drawFrame(shown);
+      } else if (scrubOn) { drawnIdx = -1; drawFrame(shown); }
+      const frac = loadedCount / FRAMES, now = performance.now();
+      if (now - lastRing > 100 || frac === 1) { lastRing = now; ring.style.setProperty('--ld', Math.round(126 * (1 - frac))); }
+      if (loadedCount >= 9 && !loader.classList.contains('done')) setTimeout(makeCue, 300);
+    }).catch(() => {
+      failed++;
+      if (i === 0 || failed > 12) { if (!ready) failVideo(); }
+    }).finally(one);
   }
-  clearTimeout(watchdog);
-  ring.style.setProperty('--ld', 0);
-  video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
-  video.load();
-  video.addEventListener('canplay', () => {
-    // iOS Safari only paints seeked frames after the video has played once
-    const pr = video.play(); if (pr && pr.then) pr.then(() => video.pause()).catch(() => {});
-    stage.classList.add('video-ready');
-    video.currentTime = heroProgress() * video.duration;
-    setTimeout(makeCue, 350);
-  }, { once: true });
+  for (let k = 0; k < CONC; k++) one();
 }
 
 const GATES = [
