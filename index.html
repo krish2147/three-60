@@ -98,7 +98,8 @@ body.menu-open{overflow:hidden}
 @media (pointer:coarse){.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}}
 
 /* ---------- hero ---------- */
-.hero{position:relative;height:500vh}
+.hero{position:relative;height:300vh}
+@media (max-width: 900px), (orientation: portrait){.hero{height:280vh}}
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#0a0f10}
 .poster{position:absolute;inset:0;background:#0a0f10 center/cover no-repeat}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .8s var(--ease-out);transform:translateZ(0)}
@@ -718,7 +719,7 @@ function drawFrame(p) {
 let target = 0, shown = 0, rafId = null, lastTick = 0, heroOnScreen = true;
 function tick(now) {
   const dt = Math.min(100, now - (lastTick || now)); lastTick = now;
-  shown += (target - shown) * (1 - Math.pow(1 - 0.2, dt / 16.667));
+  shown += (target - shown) * (1 - Math.pow(1 - 0.3, dt / 16.667));
   if (Math.abs(target - shown) < 0.0005) { shown = target; rafId = null; lastTick = 0; }
   else rafId = requestAnimationFrame(tick);
   drawFrame(shown);
