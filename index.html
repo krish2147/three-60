@@ -61,6 +61,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .brand img{width:40px;height:40px;border-radius:10px;object-fit:cover}
 .brand b{font:900 22px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.brand b,.nav .btn{white-space:nowrap}
 .brand small{display:block;font:500 10.5px/1.3 var(--mono);letter-spacing:.16em;color:var(--text-secondary);text-transform:uppercase}
 .nav ul{display:flex;gap:26px;list-style:none;margin:0 0 0 auto;padding:0}
 .nav ul a{text-decoration:none;font-weight:600;font-size:15px;color:var(--text-secondary);transition:color .3s var(--ease-out)}
@@ -71,14 +72,14 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 .nav.open .menu-btn i:nth-child(1){transform:translateY(5px) rotate(45deg)}
 .nav.open .menu-btn i:nth-child(2){opacity:0}
 .nav.open .menu-btn i:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
-.panel{position:fixed;inset:0;z-index:45;background:rgba(10,14,15,.97);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:center;padding:96px var(--gutter) 40px;opacity:0;visibility:hidden;transition:opacity .45s var(--ease-out),visibility 0s linear .45s}
+.panel{position:fixed;inset:0;z-index:45;overflow-y:auto;background:rgba(10,14,15,.97);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:center;padding:96px var(--gutter) 40px;opacity:0;visibility:hidden;transition:opacity .45s var(--ease-out),visibility 0s linear .45s}
 .panel.open{opacity:1;visibility:visible;transition:opacity .45s var(--ease-out),visibility 0s}
 .panel::before{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:repeating-linear-gradient(90deg,var(--accent) 0 48px,var(--turf-deep) 48px 96px)}
 .panel ol{list-style:none;margin:0;padding:0;counter-reset:m}
 .panel li{border-bottom:1px solid var(--line);opacity:0;transform:translateY(18px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
 .panel.open li{opacity:1;transform:none}
-.panel.open li:nth-child(2){transition-delay:.06s}.panel.open li:nth-child(3){transition-delay:.12s}.panel.open li:nth-child(4){transition-delay:.18s}.panel.open li:nth-child(5){transition-delay:.24s}
-.panel a.big-link{display:flex;align-items:baseline;gap:16px;padding:16px 0;text-decoration:none;font:900 clamp(40px,11vw,64px)/1 var(--display);text-transform:uppercase}
+.panel.open li:nth-child(2){transition-delay:.06s}.panel.open li:nth-child(3){transition-delay:.12s}.panel.open li:nth-child(4){transition-delay:.18s}.panel.open li:nth-child(5){transition-delay:.24s}.panel.open li:nth-child(6){transition-delay:.3s}
+.panel a.big-link{display:flex;align-items:baseline;gap:16px;padding:min(16px,1.6vh) 0;text-decoration:none;font:900 clamp(30px,min(11vw,6.6vh),64px)/1 var(--display);text-transform:uppercase}
 .panel a.big-link .mono{color:var(--accent)}
 .panel .row{display:flex;flex-direction:column;gap:12px;margin-top:32px}
 .panel .row .btn{width:100%}
@@ -289,6 +290,30 @@ h2.big{font:900 clamp(44px,6vw,92px)/.92 var(--display);text-transform:uppercase
 @keyframes pulse{0%{transform:scale(.6);opacity:.8}100%{transform:scale(1.8);opacity:0}}
 @media (max-width:560px){.board .r{grid-template-columns:1fr 1fr}.board .r .d2{grid-column:2}.board .r.hd{display:none}.board .day{grid-column:1/-1}}
 
+
+/* prices */
+.prices .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px}
+.price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,28px);margin-top:48px;align-items:stretch}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,2.6vw,34px);display:flex;flex-direction:column;position:relative;overflow:hidden;transition:border-color .4s var(--ease-out),transform .4s var(--ease-out)}
+.pcard:hover{border-color:rgba(155,226,58,.5);transform:translateY(-4px)}
+.pcard h3{font:800 30px/1 var(--display);text-transform:uppercase;margin:12px 0 0}
+.pcard .what{color:var(--text-secondary);font-size:15.5px;margin:10px 0 0}
+.pcard .amt{display:flex;align-items:baseline;gap:8px;margin-top:26px}
+.pcard .amt b{font:900 clamp(56px,5.6vw,80px)/.9 var(--display);font-variant-numeric:tabular-nums}
+.pcard .amt span{color:var(--text-secondary);font:500 13px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.pcard .alt{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:18px;padding-top:16px;border-top:1px dashed var(--line-strong);font-size:15.5px}
+.pcard .alt b{font:500 16px var(--mono);color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pcard .btn{margin-top:auto;align-self:flex-start}
+.pcard .spacer{flex:1;min-height:26px}
+.pcard.best{border-color:rgba(155,226,58,.55);background:linear-gradient(180deg,rgba(155,226,58,.1),var(--panel) 55%)}
+.pcard.best::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:repeating-linear-gradient(90deg,var(--accent) 0 36px,var(--turf-deep) 36px 72px)}
+.tag{display:inline-block;align-self:flex-start;padding:5px 10px;border-radius:999px;background:var(--accent);color:#0c1113;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.tag.ghost{background:none;color:var(--text-secondary);border:1px solid var(--line-strong)}
+.best .deal{margin-top:18px;padding:14px 16px;border-radius:14px;background:rgba(155,226,58,.12);border:1px solid rgba(155,226,58,.35)}
+.best .deal b{font:900 34px/1 var(--display);color:var(--accent)}
+.best .deal p{margin:6px 0 0;font-size:14.5px;color:var(--text-primary)}
+@media (max-width:900px){.price-grid{grid-template-columns:1fr}}
+
 /* how to book */
 .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,36px);margin-top:56px;position:relative}
 .steps .line{position:absolute;left:16%;width:68%;top:43px;height:2px;pointer-events:none;overflow:visible}
@@ -382,6 +407,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
     <li><a href="#hall">The hall</a></li>
     <li><a href="#academy">Academy</a></li>
     <li><a href="#timings">Timings</a></li>
+    <li><a href="#prices">Prices</a></li>
     <li><a href="#faq">Questions</a></li>
   </ul>
   <a class="btn btn-primary" href="#book">Book a slot</a>
@@ -392,8 +418,9 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
     <li><a class="big-link" href="#hall"><span class="mono">01</span>The hall</a></li>
     <li><a class="big-link" href="#academy"><span class="mono">02</span>Academy</a></li>
     <li><a class="big-link" href="#timings"><span class="mono">03</span>Timings</a></li>
-    <li><a class="big-link" href="#faq"><span class="mono">04</span>Questions</a></li>
-    <li><a class="big-link" href="#book"><span class="mono">05</span>Book</a></li>
+    <li><a class="big-link" href="#prices"><span class="mono">04</span>Prices</a></li>
+    <li><a class="big-link" href="#faq"><span class="mono">05</span>Questions</a></li>
+    <li><a class="big-link" href="#book"><span class="mono">06</span>Book</a></li>
   </ol>
   <div class="row">
     <a class="btn btn-primary" href="https://wa.me/918141850055?text=Hi%20Aark%20Arena%2C%20I%27d%20like%20to%20book%20a%20slot." target="_blank" rel="noopener">Book on WhatsApp</a>
@@ -543,6 +570,45 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
   </div>
 </section>
 
+<section class="sec prices" id="prices">
+  <div class="wrap rv">
+    <div class="head">
+      <div><span class="mono kicker part">Prices</span><h2 class="big part">Simple prices. No surprises.</h2></div>
+      <p class="lede part" style="margin:0;max-width:34ch">Pay per hour. Book a longer slot and the hourly rate drops.</p>
+    </div>
+    <div class="price-grid part">
+      <article class="pcard">
+        <span class="tag ghost">Per net</span>
+        <h3>One net</h3>
+        <p class="what">Your own lane with striped turf and floodlights.</p>
+        <div class="amt"><b>&#8377;300</b><span>per hour</span></div>
+        <div class="alt"><span>1&frac12; hours</span><b>&#8377;450</b></div>
+        <div class="spacer"></div>
+        <a class="btn btn-ghost" href="https://wa.me/918141850055?text=Hi%20Aark%20Arena%2C%20I%27d%20like%20to%20book%20one%20net." target="_blank" rel="noopener">Book a net</a>
+      </article>
+      <article class="pcard">
+        <span class="tag ghost">Practice</span>
+        <h3>Bowling machine</h3>
+        <p class="what">Set the pace and face ball after ball.</p>
+        <div class="amt"><b>&#8377;400</b><span>per hour</span></div>
+        <div class="alt"><span>1&frac12; hours</span><b>&#8377;600</b></div>
+        <div class="spacer"></div>
+        <a class="btn btn-ghost" href="https://wa.me/918141850055?text=Hi%20Aark%20Arena%2C%20I%27d%20like%20to%20book%20the%20bowling%20machine." target="_blank" rel="noopener">Book the machine</a>
+      </article>
+      <article class="pcard best">
+        <span class="tag">Best value</span>
+        <h3>Whole turf</h3>
+        <p class="what">Every net in the hall, just for your group.</p>
+        <div class="amt"><b>&#8377;900</b><span>to &#8377;1,000 per hour</span></div>
+        <div class="deal"><b>&#8377;3,200 for 4 hours</b><p>Book 4 hours and pay just &#8377;800 an hour.</p></div>
+        <div class="spacer"></div>
+        <a class="btn btn-primary" href="https://wa.me/918141850055?text=Hi%20Aark%20Arena%2C%20I%27d%20like%20to%20book%20the%20whole%20turf." target="_blank" rel="noopener">Book the whole turf</a>
+      </article>
+    </div>
+    <p class="note part">Prices in Indian rupees. Message us on WhatsApp to check free slots before you come.</p>
+  </div>
+</section>
+
 <section class="sec book" id="how">
   <div class="wrap rv" style="text-align:center">
     <span class="mono kicker part">How booking works</span>
@@ -563,7 +629,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
       <details class="part"><summary>Where exactly is Aark Arena?<i aria-hidden="true"></i></summary><div class="ans"><p>In Sevasi, Vadodara, opposite Aark International School (Gujarat 391101). The map at the bottom of this page opens directions on your phone.</p></div></details>
       <details class="part"><summary>Can we play when it rains?<i aria-hidden="true"></i></summary><div class="ans"><p>Yes. The nets are inside a covered hall with floodlights, so the monsoon and the evenings do not stop practice.</p></div></details>
       <details class="part"><summary>Can my child join the academy?<i aria-hidden="true"></i></summary><div class="ans"><p>Yes, young players train here every week. Message us your child's age and level, and we'll suggest the right batch and timing.</p></div></details>
-      <details class="part"><summary>How much does it cost?<i aria-hidden="true"></i></summary><div class="ans"><p>It depends on what you book: a net session, bowling machine time, or an academy batch. Ask on WhatsApp and you get the current price straight away.</p></div></details>
+      <details class="part"><summary>How much does it cost?<i aria-hidden="true"></i></summary><div class="ans"><p>One net is &#8377;300 an hour (&#8377;450 for 1&frac12; hours). The bowling machine is &#8377;400 an hour (&#8377;600 for 1&frac12; hours). The whole turf is &#8377;900 to &#8377;1,000 an hour, or &#8377;3,200 for 4 hours. For academy fees, ask on WhatsApp.</p></div></details>
       <details class="part"><summary>What should I bring?<i aria-hidden="true"></i></summary><div class="ans"><p>Your own bat, pads and gloves if you have them, plus water and shoes suited to turf. If you are new and missing kit, ask us first.</p></div></details>
     </div>
   </div>
@@ -577,7 +643,7 @@ footer .fine{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;
       <p class="lede part">Fill this in and WhatsApp opens with your message ready to send to Aark Arena.</p>
       <div class="fields part">
         <div><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" placeholder="Rohan Patel" required></div>
-        <div><label for="f-want">I want to</label><select id="f-want" name="want"><option>book a net session</option><option>use the bowling machine</option><option>join the academy</option><option>ask about fees</option><option>ask something else</option></select></div>
+        <div><label for="f-want">I want to</label><select id="f-want" name="want"><option>book a net session</option><option>use the bowling machine</option><option>book the whole turf</option><option>join the academy</option><option>ask about fees</option><option>ask something else</option></select></div>
         <div><label for="f-day">Day</label><select id="f-day" name="day"><option>Any day</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
         <div><label for="f-time">Time</label><select id="f-time" name="time"><option>Morning (7 to 11 am)</option><option>Afternoon</option><option>Evening (till 9 pm)</option></select></div>
         <div class="full"><label for="f-msg">Anything else? <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label><textarea id="f-msg" name="msg" placeholder="Age, level, how many players..."></textarea></div>
